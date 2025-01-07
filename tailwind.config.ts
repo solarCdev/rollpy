@@ -7,7 +7,13 @@ export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
 
   theme: {
-    extend: {}
+    extend: {
+      gray: {
+        bg: "#111111",
+        1: "#222222",
+        2: "#AAAAAA"
+      }
+    }
   },
 
   plugins: [typography, forms, containerQueries]

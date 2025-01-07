@@ -1,3 +1,151 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
-@import 'tailwindcss/utilities'
+@import 'tailwindcss/utilities';
+
+body {
+	background-color: #111;
+	box-sizing: border-box;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+* {
+	transition: 0.3s ease-in;
+	font-size: 14px;
+	accent-color: #f6004e;
+	color: #fff;
+	line-height: 140%;
+	font-family: 'Pretendard Variable';
+}
+
+button,
+input[type='submit'] {
+	display: flex;
+	background-color: #f6004e;
+	border-radius: 12px;
+	font-size: 16px;
+	font-weight: 500;
+	padding: 12px;
+	justify-content: center;
+	gap: 8px;
+	align-items: center;
+}
+
+button:hover,
+input[type='submit']:hover {
+	background-color: #b6003a;
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+a {
+	color: #f6004e;
+}
+
+a > button {
+	color: white;
+}
+
+.secondary {
+	background-color: #111;
+	border: 1px solid #242424;
+}
+
+.secondary:hover {
+	background-color: #242424;
+}
+
+.disabled {
+	color: #aaa;
+	background-color: 222;
+}
+
+ul {
+	align-items: center;
+	gap: 0px 2%;
+	display: flex;
+	width: 100%;
+	flex-wrap: wrap;
+}
+
+h4 {
+	font-size: 14px;
+	color: #aaa;
+}
+
+.sub-title {
+	font-size: 18px;
+	font-weight: 600;
+}
+
+h1 {
+	font-size: 24px;
+	font-weight: 600;
+}
+
+.tab {
+	width: 100%;
+	display: flex;
+	background-color: #222;
+	padding: 8px;
+	border-radius: 20px;
+	margin-bottom: 24px;
+}
+.tab-hl,
+.tab-nhl {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	gap: 8px;
+}
+
+.tab-nhl {
+	background-color: #222;
+	color: #aaa;
+}
+
+.tab-hl:hover {
+	background-color: #b6003a;
+}
+
+.tab-nhl:hover {
+	background-color: #111;
+}
+
+input[type='text'],
+input[type='number'] {
+	width: 100%;
+	font-size: 14px;
+	border: none;
+	background-color: #222222;
+	border-radius: 12px;
+	height: 48px;
+}
+
+input[type='color'] {
+	background: none;
+	width: 48px;
+	height: 48px;
+	border-radius: 999px;
+	border: 1px solid #242424;
+}
+
+input[type='color']::-webkit-color-swatch {
+	border-radius: 999px;
+	border: none;
+}
+
+.emoji {
+	width: 48px;
+	height: 48px;
+	border-radius: 999px;
+}
+
+h2 {
+	font-size: 18px;
+	font-weight: 600;
+}
