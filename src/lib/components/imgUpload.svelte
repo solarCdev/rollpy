@@ -39,14 +39,19 @@
 
 	onMount(() => {
 		auth.onAuthStateChanged(async () => {
-			if (auth.currentUser) {
-				loggedIn = true;
-				try {
+			try {
+				if (auth.currentUser) {
+					loggedIn = true;
+
 					const snapshot = await getDoc(doc(db, 'user', auth.currentUser.uid));
 					if (snapshot.data()?.uploadedImgs) curList = snapshot.data()?.uploadedImgs;
-				} catch (err) {}
-			} else {
-				loggedIn = false;
+
+					toggleError;
+				} else {
+					loggedIn = false;
+				}
+			} catch (err) {
+				toggleError = true;
 			}
 		});
 	});
@@ -127,7 +132,7 @@
 	}
 
 	.none {
-		width: 100px;
+		width: 92px;
 		height: fit-content;
 		background: none;
 		border-radius: 0;

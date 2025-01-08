@@ -21,6 +21,21 @@
 		}?
 	];
 
+	type Gif = {
+		created: number;
+		hasaudio: boolean;
+		id: string;
+		tags: string[];
+		title: string;
+		content_description: string;
+		itemurl: string;
+		hascaption: boolean;
+		flags: string;
+		bg_color: string;
+		url: string;
+		media_formats: Media_formats;
+	};
+
 	type Media_formats = {
 		gif: {
 			url: string;
@@ -47,13 +62,15 @@
 	let gifList: GifList = $state([]);
 	let type: string = $state('gif');
 	let selected: number = $state(-1);
-
+	let next: string = $state('');
 	let query = $state('');
+	let loading = $state(false);
 
 	const onsubmit = async (event: Event) => {
 		event.preventDefault();
 		gifList = [];
 		const list = await getGIF(query, type);
+		next = list.next;
 		gifList = list.results;
 	};
 
@@ -106,6 +123,24 @@
 					<img src={gif?.media_formats.gif.url} width="100px" alt="" loading="lazy" /></button
 				>
 			{/each}
+			{#if next}
+				<button
+					class="add"
+					onclick={async (event) => {
+						loading = true;
+						const list = await getGIF(query, type, next);
+						loading = false;
+						next = list.next;
+						console.log(next);
+						if (list) {
+							list.results.forEach((v: Gif) => {
+								gifList.push(v);
+							});
+						}
+						// gifList = [...gifList, ...(list.results as GifList)];
+					}}>{loading ? '로딩중...' : '더보기'}</button
+				>
+			{/if}
 		</ul>
 	</div>
 </div>
@@ -122,7 +157,7 @@
 
 	.none {
 		/* background: none; */
-		width: 100px;
+		width: 96px;
 		padding: 0;
 		margin: 0;
 	}
@@ -146,6 +181,11 @@
 
 	.choice {
 		margin-top: 12px;
+	}
+
+	.add {
+		width: 100%;
+		background: none;
 	}
 
 	.list-wrap::-webkit-scrollbar-track {

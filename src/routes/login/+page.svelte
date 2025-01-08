@@ -6,26 +6,42 @@
 	import { redirect } from '@sveltejs/kit';
 	import { onMount } from 'svelte';
 	import { currentNavBar, titleOnTop } from '$lib/currentNavBar';
+	import { FirebaseError } from 'firebase/app';
 
 	let { data }: { data: PageData } = $props();
 
 	let email = $state('');
 	let password = $state('');
 
-	let errorMsg = {
+	let errorMsg = $state({
 		email: '',
 		password: ''
-	};
+	});
 
 	const onsubmit = async (
 		event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }
 	) => {
 		event.preventDefault();
-		let res = await signInWithEmailAndPassword(auth, email, password);
-		if (data.redirectTo) {
-			window.location.href = data.redirectTo;
-		} else {
-			window.location.href = '/';
+		try {
+			let res = await signInWithEmailAndPassword(auth, email, password);
+			if (data.redirectTo) {
+				window.location.href = data.redirectTo;
+			} else {
+				window.location.href = '/';
+			}
+		} catch (err) {
+			let errObj = err as FirebaseError;
+			console.log(errObj.code, errObj.name);
+			if (errObj.code === 'auth/invalid-credential')
+				errorMsg.password = '이메일 주소 또는 비밀번호가 잘못되었어요.';
+			else if (errObj.code === 'auth/invalid-email')
+				errorMsg.email = '형식이 맞지 않는 이메일 주소에요.';
+			else if (errObj.code === 'auth/missing-password')
+				errorMsg.password = '비밀번호를 입력해주세요.';
+			else if (errObj.code === 'auth/user-not-found') errorMsg.password = '유저를 찾을 수 없어요.';
+			else {
+				errorMsg.password = '알 수 없는 오류가 발생했어요.';
+			}
 		}
 	};
 
@@ -42,7 +58,7 @@
 	<CustomInput
 		bind:value={email}
 		label="이메일"
-		type="text"
+		type="email"
 		placeholder="이메일 주소를 입력해주세요"
 		errorMessage={errorMsg.email}
 	/>

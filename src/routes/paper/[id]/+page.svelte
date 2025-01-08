@@ -43,6 +43,7 @@
 	let cnt: number = $state(0);
 
 	let viewIdx: number | null = $state(null);
+	let err = $state(false);
 
 	const onLoadMore = async () => {
 		paperList = await paperGetter.next();
@@ -50,112 +51,120 @@
 	};
 
 	onMount(async () => {
-		const response = await getDoc(doc(db, 'paper', id));
-		const result = response.data() as ResponseData;
-		meta = {
-			anonymous: result?.anonymous,
-			title: result?.title,
-			creator: result?.creator,
-			createdAt: result?.createdAt.toDate(),
-			creatorId: result?.creatorId
-		};
-		$paperstatus = {
-			id,
-			anonymous: meta.anonymous,
-			title: meta.title,
-			type: 'paper',
-			creator: meta.creatorId
-		};
-		$titleOnTop = '';
-		$currentNavBar = 'paper';
-		cnt = (await getCountFromServer(collection(db, 'paper', id, 'papers'))).data().count;
-		paperList = await paperGetter.getFirst();
+		try {
+			const response = await getDoc(doc(db, 'paper', id));
+			const result = response.data() as ResponseData;
+			meta = {
+				anonymous: result.anonymous,
+				title: result.title,
+				creator: result.creator,
+				createdAt: result.createdAt.toDate(),
+				creatorId: result.creatorId
+			};
+			$paperstatus = {
+				id,
+				anonymous: meta.anonymous,
+				title: meta.title,
+				type: 'paper',
+				creator: meta.creatorId
+			};
+			$titleOnTop = '';
+			$currentNavBar = 'paper';
+			cnt = (await getCountFromServer(collection(db, 'paper', id, 'papers'))).data().count;
+			paperList = await paperGetter.getFirst();
 
-		loading = false;
+			loading = false;
+		} catch (a) {
+			err = true;
+		}
 	});
 </script>
 
-{#if !loading}
-	{#if viewIdx !== null}
-		{#key viewIdx}
-			<Viewer
-				single={false}
-				info={paperList[viewIdx]}
-				prev={() => {
-					if (viewIdx !== null) viewIdx--;
-					return viewIdx;
-				}}
-				next={() => {
-					if (viewIdx !== null) viewIdx++;
-					return viewIdx;
-				}}
+{#if !err}
+	{#if !loading}
+		{#if viewIdx !== null}
+			{#key viewIdx}
+				<Viewer
+					single={false}
+					info={paperList[viewIdx]}
+					prev={() => {
+						if (viewIdx !== null) viewIdx--;
+						return viewIdx;
+					}}
+					next={() => {
+						if (viewIdx !== null) viewIdx++;
+						return viewIdx;
+					}}
+					closeTab={() => {
+						viewIdx = null;
+					}}
+				/>
+			{/key}
+		{/if}
+		{#if toggleShare}
+			<Tab
 				closeTab={() => {
-					viewIdx = null;
+					toggleShare = false;
 				}}
-			/>
-		{/key}
-	{/if}
-	{#if toggleShare}
-		<Tab
-			closeTab={() => {
-				toggleShare = false;
-			}}
-		>
-			{#snippet child()}
-				<Share />
-			{/snippet}</Tab
-		>
-	{/if}
-	<div class="info-wrap">
-		<h1>{meta?.title}</h1>
-		<span>By. {meta?.creator}</span>
-		<div class="buttons">
-			<a href={'/write?id=' + id}>
-				<button><WriteIcon />편지 쓰기</button>
-			</a>
-			<button
-				class="secondary"
-				onclick={() => {
-					toggleShare = !toggleShare;
-				}}><ShareIcon />공유하기</button
 			>
+				{#snippet child()}
+					<Share />
+				{/snippet}</Tab
+			>
+		{/if}
+		<div class="info-wrap">
+			<h1>{meta?.title}</h1>
+			<span>By. {meta?.creator}</span>
+			<div class="buttons">
+				<a href={'/write?id=' + id}>
+					<button><WriteIcon />편지 쓰기</button>
+				</a>
+				<button
+					class="secondary"
+					onclick={() => {
+						toggleShare = !toggleShare;
+					}}><ShareIcon />공유하기</button
+				>
+			</div>
 		</div>
-	</div>
-	<div class="summary">
-		<span class="sub-title">도착한 편지</span>
-		<h4>총 {cnt}개</h4>
-	</div>
-	<div class="list-wrap">
-		{#if !paperGetter.empty}
-			<ul>
-				{#each paperList as paper, i}
-					<button
-						class="none"
-						onclick={() => {
-							viewIdx = i;
-						}}
-						><PaperButton
-							emoji={!meta?.anonymous ? paper.creatorEmoji : '👤'}
-							name={!meta?.anonymous ? paper.creator : '익명'}
-						/></button
-					>
-				{/each}
-			</ul>
-		{:else}
-			<span>아직 롤링페이퍼가 작성되지 않았어요!</span>
-		{/if}
-		{#if !end}
-			<button
-				class="more"
-				onclick={() => {
-					onLoadMore();
-				}}>+ 더보기</button
-			>
-		{/if}
-	</div>
-	<div class="my">
-		<a href="/newpaper">나만의 롤링페이퍼 만들러 가기</a>
-	</div>
+		<div class="summary">
+			<span class="sub-title">도착한 편지</span>
+			<h4>총 {cnt}개</h4>
+		</div>
+		<div class="list-wrap">
+			{#if !paperGetter.empty}
+				<ul>
+					{#each paperList as paper, i}
+						<button
+							class="none"
+							onclick={() => {
+								viewIdx = i;
+							}}
+							><PaperButton
+								emoji={!meta?.anonymous ? paper.creatorEmoji : '👤'}
+								name={!meta?.anonymous ? paper.creator : '익명'}
+							/></button
+						>
+					{/each}
+				</ul>
+			{:else}
+				<span>아직 롤링페이퍼가 작성되지 않았어요!</span>
+			{/if}
+			{#if !end}
+				<button
+					class="more"
+					onclick={() => {
+						onLoadMore();
+					}}>+ 더보기</button
+				>
+			{/if}
+		</div>
+		<div class="my">
+			<a href="/newpaper">나만의 롤링페이퍼 만들러 가기</a>
+		</div>
+	{/if}
+{:else}
+	<span>에러가 발생했습니다. <a href="/">메인 화면으로 돌아가기</a> </span>
 {/if}
 
 <style>

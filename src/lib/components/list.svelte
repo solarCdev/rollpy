@@ -16,7 +16,7 @@
 
 <li class="wrap">
 	<div class="cnt">
-		{#if cnt}
+		{#if cnt !== undefined}
 			<span><strong>{cnt}</strong>명이 이 롤링페이퍼에 편지를 남겼어요!</span>
 		{:else if mates}
 			<span

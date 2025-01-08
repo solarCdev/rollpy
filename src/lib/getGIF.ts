@@ -1,9 +1,7 @@
-export const getGIF = async (term: string, type: string) => {
+export const getGIF = async (term: string, type: string, next?: string) => {
 	let apikey = 'AIzaSyDnrNIODWmOsExA7q_buNQNOysDrCUczPk';
 	let clientkey = 'rollpy';
 	let lmt = 20;
-
-	// test search term
 	let search_term = term;
 
 	let search_url =
@@ -21,19 +19,9 @@ export const getGIF = async (term: string, type: string) => {
 	if (type === 'sticker') {
 		search_url += '&searchfilter=' + type;
 	}
-	// let search_url =
-	// 	'https://tenor.googleapis.com/v2/search?media_filter=gif&country=KR&q=' +
-	// 		search_term +
-	// 		'&key=' +
-	// 		apikey +
-	// 		'&client_key=' +
-	// 		clientkey +
-	// 		'&limit=' +
-	// 		lmt +
-	// 		type ===
-	// 	'sticker'
-	// 		? '&searchfilter=' + type
-	// 		: '';
+	if (next) {
+		search_url += '&pos=' + next;
+	}
 	let response = await fetch(search_url);
 	let result = await response.text();
 

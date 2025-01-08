@@ -14,6 +14,9 @@
 	import TextIcon from '$lib/assets/textIcon.svelte';
 	import ImageIcon from '$lib/assets/imageIcon.svelte';
 	import GifIcon from '$lib/assets/gifIcon.svelte';
+	import { doc, getDoc } from 'firebase/firestore';
+	import { db } from '$lib/fbase';
+	import { FirebaseError } from 'firebase/app';
 
 	type TabType = 'gifSearch' | 'textEdit' | 'rectEdit' | 'imgUpload' | 'none';
 	type Selected = 'rect' | 'text' | 'gif' | 'img' | 'none' | 'bg';
@@ -35,6 +38,8 @@
 	let nickname: string = $state('');
 	let emoji: string = $state('');
 	let bgColor: string = $state('white');
+
+	let errMsg = $state('');
 
 	$effect(() => {
 		bgColor = bgColor;
@@ -76,12 +81,21 @@
 
 	const onsubmit = async (event: Event & { currentTarget: EventTarget & HTMLFormElement }) => {
 		event.preventDefault();
-		if (to) {
-			await uploadCanvas(team, id, nickname, emoji, canvas, to);
-			window.location.href = '/team/' + id;
-		} else {
-			await uploadCanvas(team, id, nickname, emoji, canvas);
-			window.location.href = '/paper/' + id;
+		try {
+			if (to) {
+				let isDoc = (await getDoc(doc(db, 'team', id))).data() !== undefined;
+				if (!isDoc) throw new FirebaseError('', '');
+				await uploadCanvas(team, id, nickname, emoji, canvas, to);
+				// window.location.href = '/team/' + id;
+			} else {
+				let isDoc = (await getDoc(doc(db, 'paper', id))).data() !== undefined;
+				if (!isDoc) throw new FirebaseError('', '');
+				await uploadCanvas(team, id, nickname, emoji, canvas);
+				// window.location.href = '/paper/' + id;
+			}
+		} catch (err) {
+			console.log(err);
+			errMsg = '알 수 없는 에러가 발생했습니다.';
 		}
 	};
 
@@ -125,7 +139,7 @@
 			<form {onsubmit}>
 				{#if !team}
 					<CustomInput
-						errorMessage=""
+						errorMessage={errMsg}
 						label="사용할 이름"
 						type="text"
 						maxlength={8}

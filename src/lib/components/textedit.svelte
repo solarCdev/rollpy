@@ -139,7 +139,11 @@
 			{:else}
 				<select bind:value={nowFont} size="5">
 					{#each fonts as font, i}
-						<option value={font[0]} selected={i == 0 ? true : false}>{font[2]}</option>
+						<option
+							style={'font-family:' + font[0] + ';'}
+							value={font[1]}
+							selected={i == 0 ? true : false}>{font[2]}</option
+						>
 					{/each}
 				</select>
 			{/if}

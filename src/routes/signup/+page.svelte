@@ -11,6 +11,7 @@
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
 	import { currentNavBar, titleOnTop } from '$lib/currentNavBar';
+	import type { FirebaseError } from 'firebase/app';
 
 	let { data }: { data: PageData } = $props();
 
@@ -26,7 +27,9 @@
 		nickname: ''
 	});
 
-	const onsubmit = (event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) => {
+	const onsubmit = async (
+		event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }
+	) => {
 		event.preventDefault();
 
 		errorMsg.email = '';
@@ -36,34 +39,40 @@
 
 		let pass = true;
 		if (password !== passwordCheck) {
-			errorMsg.passwordCheck = '비밀번호가 일치하지 않습니다.';
+			errorMsg.passwordCheck = '비밀번호가 일치하지 않아요요.';
 			pass = false;
-		} else if (password.length < 8) {
-			errorMsg.password = '비밀번호가 너무 짧습니다.';
+		} else if (password.length < 6) {
+			errorMsg.password = '비밀번호가 너무 짧아요요.';
 			pass = false;
 		}
 		if (nickname.length !== nickname.replaceAll(' ', '').length) {
-			errorMsg.nickname = '닉네임에 띄어쓰기를 포함할 수 없습니다.';
+			errorMsg.nickname = '닉네임에 띄어쓰기를 포함할 수 없어요.';
 			pass = false;
 		}
 		let res: UserCredential;
 		if (pass) {
-			createUserWithEmailAndPassword(auth, email, password)
-				.then(async (result) => {
-					res = result;
-					await updateProfile(res.user, { displayName: nickname, photoURL: '👤' });
-					await setDoc(doc(db, 'user', result.user.uid), {
-						emoji: '👤',
-						userName: nickname,
-						uploadedImgs: []
-					});
-					if (data.redirectTo) {
-						window.location.href = data.redirectTo;
-					} else {
-						window.location.href = '/';
-					}
-				})
-				.catch(() => {});
+			try {
+				res = await createUserWithEmailAndPassword(auth, email, password);
+				await updateProfile(res.user, { displayName: nickname, photoURL: '👤' });
+				await setDoc(doc(db, 'user', res.user.uid), {
+					emoji: '👤',
+					userName: nickname,
+					uploadedImgs: []
+				});
+				if (data.redirectTo) {
+					window.location.href = data.redirectTo;
+				} else {
+					window.location.href = '/';
+				}
+			} catch (err) {
+				let errObj = err as FirebaseError;
+				console.log(errObj);
+				if (errObj.code === 'auth/email-already-in-use')
+					errorMsg.email = '이미 사용중인 이메일입니다.';
+				else if (errObj.code === 'auth/too-many-requests')
+					errorMsg.email = '잠시 후에 다시 시도해 주세요.';
+				else errorMsg.email = '알 수 없는 오류가 발생했어요.';
+			}
 		}
 	};
 
