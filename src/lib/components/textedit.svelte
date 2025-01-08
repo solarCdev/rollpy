@@ -141,7 +141,7 @@
 					{#each fonts as font, i}
 						<option
 							style={'font-family:' + font[0] + ';'}
-							value={font[1]}
+							value={font[0]}
 							selected={i == 0 ? true : false}>{font[2]}</option
 						>
 					{/each}
