@@ -86,12 +86,12 @@
 				let isDoc = (await getDoc(doc(db, 'team', id))).data() !== undefined;
 				if (!isDoc) throw new FirebaseError('', '');
 				await uploadCanvas(team, id, nickname, emoji, canvas, to);
-				// window.location.href = '/team/' + id;
+				window.location.href = '/team/' + id;
 			} else {
 				let isDoc = (await getDoc(doc(db, 'paper', id))).data() !== undefined;
 				if (!isDoc) throw new FirebaseError('', '');
 				await uploadCanvas(team, id, nickname, emoji, canvas);
-				// window.location.href = '/paper/' + id;
+				window.location.href = '/paper/' + id;
 			}
 		} catch (err) {
 			console.log(err);
