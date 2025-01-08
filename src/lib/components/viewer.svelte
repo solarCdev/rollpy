@@ -60,11 +60,11 @@
 				if (!imgEle.src) {
 					const gif = document.createElement('video');
 					const gifSource = document.createElement('source');
-					gif.id = info?.source[0].src;
-					gif.width = info?.source[0].width;
-					gif.height = info?.source[0].height;
+					gif.id = info?.source[idx].src;
+					gif.width = info?.source[idx].width;
+					gif.height = info?.source[idx].height;
 					gif.muted = true;
-					gifSource.src = info?.source[0].src;
+					gifSource.src = info?.source[idx].src;
 					gif.autoplay = true;
 					gif.loop = true;
 					gif.appendChild(gifSource);
