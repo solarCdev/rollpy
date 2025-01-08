@@ -4,6 +4,9 @@
 
 <button
 	onclick={() => {
+		if (history.length === 0) {
+			window.location.href = '/';
+		}
 		window.history.back();
 	}}><ArrowIcon /></button
 >
