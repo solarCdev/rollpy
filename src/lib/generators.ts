@@ -127,7 +127,8 @@ export class TextGenerator {
 			fontSize: fontsize,
 			backgroundColor: bg_color,
 			fill: color,
-			centeredScaling: true
+			centeredScaling: true,
+			fontFamily: 'Pretendard-Regular'
 		});
 		if (font) {
 			newText.set('fontFamily', font);

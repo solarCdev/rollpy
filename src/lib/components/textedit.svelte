@@ -50,7 +50,7 @@
 	let color: string = $state(canvas?.getActiveObject()?.get('fill'));
 	let fontsize: number = $state(canvas?.getActiveObject()?.get('fontSize'));
 	let content: string = $state(canvas?.getActiveObject()?.get('text'));
-	let nowFont: string = $state(canvas?.getActiveObject()?.get('font'));
+	let nowFont: string = $state(canvas?.getActiveObject()?.get('fontFamily'));
 	let textAlign = $state(canvas?.getActiveObject()?.get('textAlign'));
 	const setter = (aligns: string) => {
 		textAlign = aligns;
@@ -137,12 +137,13 @@
 					{/each}
 				</div>
 			{:else}
+				<span>아래를 클릭해 폰트를 바꾸세요</span>
 				<select bind:value={nowFont} size="5">
 					{#each fonts as font, i}
 						<option
 							style={'font-family:' + font[0] + ';'}
 							value={font[0]}
-							selected={i == 0 ? true : false}>{font[2]}</option
+							selected={nowFont === font[0] ? true : false}>{font[2]}</option
 						>
 					{/each}
 				</select>
