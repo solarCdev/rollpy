@@ -4,6 +4,7 @@
 
 <button
 	onclick={() => {
+		console.log(history.length);
 		if (history.length === 0) {
 			window.location.href = '/';
 		}
