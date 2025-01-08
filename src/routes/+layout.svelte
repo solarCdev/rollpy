@@ -23,7 +23,7 @@
 <svelte:head>
 	<title>Rollpy | 추억을 저장해보자</title>
 	<meta name="description" content="롤링페이퍼 앱, 롤피입니다." />
-	<meta property="og:url" content={window.location.href} />
+	<meta property="og:url" content="rollpy.vercel.app" />
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content="Rollpy ✍️" />
 	<meta property="og:description" content="롤링페이퍼 앱, 롤피입니다." />

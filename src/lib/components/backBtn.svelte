@@ -5,7 +5,7 @@
 <button
 	onclick={() => {
 		console.log(history.length);
-		if (history.length === 0) {
+		if (history.length === 1) {
 			window.location.href = '/';
 		}
 		window.history.back();
